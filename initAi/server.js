@@ -1,6 +1,4 @@
 const express = require('express')
-var fs = require('fs');
-var https = require('https');
 const bodyParser = require('body-parser')
 const runLogic = require('./src/runLogic')
 const sendLogicResult = require('./src/sendLogicResult')
@@ -18,17 +16,16 @@ const applozicAuthorization = {
         deviceKey: '6d4b7af8-b00e-4f0e-b970-7361c78c0e63',
     }
 };
-const app = express()
+const app = express();
+var fs = require('fs');
+var https = require('https');
+var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+
+var credentials = {key: privateKey, cert: certificate};
 const {PORT = 3022} = process.env
-var options = {
-    key: fs.readFileSync('/etc/ssl/server.key'),
-    cert: fs.readFileSync('/etc/ssl/server.crt'),
-    requestCert: false,
-    rejectUnauthorized: false
-};
-var server = https.createServer(options, app).listen(8443, function(){
-    console.log("server started at port 3000");
-});
+
+
 app.use(bodyParser.json())
 
 app.post('/init/', ({body: {event_type, data}, hostname}, res) => {
@@ -68,4 +65,9 @@ app.post('/applozic/', ({body: {event_type, data}, hostname}, res) => {
     res.send(200);
 });
 
-app.listen(PORT, () => console.log(`Webhook server is running on port ${PORT}!`))
+//app.listen(PORT, () => console.log(`Webhook server is running on port ${PORT}!`))
+
+var httpsServer = https.createServer(credentials, app);
+
+
+httpsServer.listen(PORT, () => console.log(`Webhook server is running on port https ${PORT}`));
