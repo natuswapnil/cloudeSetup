@@ -1,4 +1,6 @@
 const express = require('express')
+var fs = require('fs');
+var https = require('https');
 const bodyParser = require('body-parser')
 const runLogic = require('./src/runLogic')
 const sendLogicResult = require('./src/sendLogicResult')
@@ -18,7 +20,15 @@ const applozicAuthorization = {
 };
 const app = express()
 const {PORT = 3022} = process.env
-
+var options = {
+    key: fs.readFileSync('/etc/ssl/server.key'),
+    cert: fs.readFileSync('/etc/ssl/server.crt'),
+    requestCert: false,
+    rejectUnauthorized: false
+};
+var server = https.createServer(options, app).listen(8443, function(){
+    console.log("server started at port 3000");
+});
 app.use(bodyParser.json())
 
 app.post('/init/', ({body: {event_type, data}, hostname}, res) => {
