@@ -1,7 +1,16 @@
+
+
+
 var restify = require('restify');
 var builder = require('botbuilder');
 var labtestObj = require('./script/labtest.js');
 var commonFun = require('./script/common/common.js');
+
+
+const express = require('express')
+const bodyParser = require('body-parser')
+var https = require('https');
+const app = express();
 var fs = require('fs');
 var privateKey  = fs.readFileSync('sslcert/nginx.key', 'utf8');
 var certificate = fs.readFileSync('sslcert/nginx.crt', 'utf8');
@@ -9,6 +18,14 @@ var https_options = {
   key: privateKey,
   certificate: certificate
 };
+var credentials = {key: privateKey, cert: certificate};
+const {PORT=443} = process.env
+
+
+app.use(bodyParser.json())
+
+
+
 // Get secrets from server environment
 var botConnectorOptions = {
     appId: process.env.BOTFRAMEWORK_APPID,
@@ -20,19 +37,22 @@ var connector = new builder.ChatConnector(botConnectorOptions);
 var bot = new builder.UniversalBot(connector);
 
 // Setup Restify Server
-var server = restify.createServer(https_options);
+//var server = restify.createServer(https_options);
 
 // Handle Bot Framework messages
-server.post('/api/messages', connector.listen());
+
+
+
+app.post('/api/messages', connector.listen());
 
 // Serve a static web page
-server.get(/.*/, restify.serveStatic({
+app.get(/.*/, restify.serveStatic({
     'directory': '.',
     'default': 'index.html'
 }));
 
-server.listen(process.env.port || 443, function() {
-    console.log('%s listening to %s', server.name, server.url);
+app.listen(process.env.port || 443, function() {
+    console.log('%s listening to %s', app.name, app.url);
 });
 
 var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b29c3cfc-a7f9-43b4-84c3-3050ff53b545?subscription-key=20884d2b74dd4b1d950fa4453098e79b&timezoneOffset=0.0&verbose=true&q=');
@@ -116,82 +136,8 @@ intents.onDefault([
     }
 ]);
 
-
-// ******************************************************************************************************
-// bot.dialog('/', [
-//     function(session, args, next) {
-//         session.send("welcome !!!");
+var httpsServer = https.createServer(credentials, app);
 
 
+httpsServer.listen(PORT, () => console.log(`Webhook server is running on port https ${PORT}`));
 
-//         if (!session.userData.name) {
-//             session.beginDialog('/profile') ;
-//         }else{
-//            next();
-//         }
-//     },
-//     function(session, results) {
-//                  session.send('Hi! dude  %s', session.userData.name);
-//                  session.send('dob  %s', session.userData.dob);
-//                  session.send('gender  %s', session.userData.gender);
-//                  session.send('mobile  %s', session.userData.mobile);
-//                //  builder.Prompts.text(session, 'i am at promt ');
-//     }
-// ]);
-
-// bot.dialog('/profile', [
-
-//             function (session){
-//                 builder.Prompts.text(session, 'Hi! Tell me your name');
-//             },
-
-//             function (session, results){
-//                 session.userData.name = results.response;
-
-//                 if(!session.userData.gender){
-
-//                     builder.Prompts.choice(session, 'Please select gender ', "male|female");
-
-//                 }else{
-//                     next();
-//                 }
-
-//             }
-//             ,
-
-//             function (session, results){
-//                 session.userData.gender = results.response.entity;
-
-//                 if(!session.userData.dob){
-
-//                     builder.Prompts.time(session, 'give date of birth ');
-
-//                 }else{
-//                     next();
-//                 }
-
-//             }
-//             ,
-
-//             function (session, results){
-//                 session.userData.dob = builder.EntityRecognizer.resolveTime([results.response]);
-
-//                 if(!session.userData.mobile){
-
-//                     builder.Prompts.text(session, 'give mobile number ');
-
-//                 }else{
-//                     next();
-//                 }
-
-//             }
-//             ,
-
-//             function (session, results){
-//                 session.userData.mobile = results.response;
-
-//                 session.endDialog();
-//             }
-
-
-// ]);
