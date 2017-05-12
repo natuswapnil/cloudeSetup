@@ -4,7 +4,7 @@
     var callAPI = (params, url, methodType, isRestCall, callback, currentSessionObj) => {
         try {
        currentSessionObj = currentSessionObj ||{};
-        var apiUrl = 'http://10.0.9.20:9090';
+        var apiUrl = 'http://localhost:9090';
         var appToken = 'Basic Y242OTQ4MEBiNjI3OnByYXhpZnkzNDU=';
         var fullUrl = apiUrl + url;
 

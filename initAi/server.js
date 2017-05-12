@@ -19,11 +19,11 @@ const applozicAuthorization = {
 const app = express();
 var fs = require('fs');
 var https = require('https');
-var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var privateKey  = fs.readFileSync('sslcert/nginx.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/nginx.crt', 'utf8');
 
 var credentials = {key: privateKey, cert: certificate};
-const {PORT = 3022} = process.env
+const {PORT=443} = process.env
 
 
 app.use(bodyParser.json())
