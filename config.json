@@ -1,0 +1,23 @@
+{
+	"ports": {
+		"integration_server_port": 9090
+	},
+	"implementations": {
+		"/fhir": "com.praxify.mw.fhir3.resource",
+		"/cerner": "com.praxify.mw.emr1.resource"
+	},
+	"fhir_config": {
+		"host": "open-ic.epic.com",
+		"port": 443,
+		"isSSL": true,
+		"context": "/FHIR/api/FHIR/DSTU2",
+		"isDummy": true,
+		"dummyPatientIds": "Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB,TUKRxL29bxE9lyAcdTIyrWC6Ln5gZ-z7CLr2r-2SY964B,Tn5PIy82IrFp7xASQoAb5J45HAll2Sap3SzQnHBPM.kIB,TG9gWZbqlRvTPVZRM5ZE0sDSvsfTDu8MjhLKdTTHClQkB,TRvrqLQ7wHP8v1BfKkYOvbrFj1ZAhteRv6Tcv40nTTYoB,ToHDIzZiIn5MNomO309q0f7TCmnOq6fbqOAWQHA1FRjkB,TJ0QiyZ6YNFjcofUWBjUzxfqxnmDX0tC036gBbh-cLwMB,TwncfOQytqCYtmJKvdpDOSU7U1upj6s9crg-PFHQgSO0B,Tt.ozkoEh2-Kc6KfzsnFFLb-bD-FGZJk6gCno4QlSN7oB"
+	},
+	"cerner_config": {
+		"host": "praxifytest.bhs.org",
+		"buildEnvironment": "b627",
+		"port": 443,
+		"isSSL": true
+	}
+}
