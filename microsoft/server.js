@@ -2,6 +2,13 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var labtestObj = require('./script/labtest.js');
 var commonFun = require('./script/common/common.js');
+var fs = require('fs');
+var privateKey  = fs.readFileSync('sslcert/nginx.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/nginx.crt', 'utf8');
+var https_options = {
+  key: privateKey,
+  certificate: certificate
+};
 // Get secrets from server environment
 var botConnectorOptions = {
     appId: process.env.BOTFRAMEWORK_APPID,
@@ -13,7 +20,7 @@ var connector = new builder.ChatConnector(botConnectorOptions);
 var bot = new builder.UniversalBot(connector);
 
 // Setup Restify Server
-var server = restify.createServer();
+var server = restify.createServer(https_options);
 
 // Handle Bot Framework messages
 server.post('/api/messages', connector.listen());
@@ -24,7 +31,7 @@ server.get(/.*/, restify.serveStatic({
     'default': 'index.html'
 }));
 
-server.listen(process.env.port || 3978, function() {
+server.listen(process.env.port || 443, function() {
     console.log('%s listening to %s', server.name, server.url);
 });
 
